@@ -28,7 +28,7 @@ custom_css <- "
 
 dashboardPage(
   dashboardHeader(
-    title = "Steam Games",
+    title = "Steam Recommender",
     tags$li(class = "dropdown",
             tags$div(style = "width: 100%; height: 58px;", slider)
     )
@@ -36,7 +36,12 @@ dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-      menuItem("Trends Analysis", tabName = "trends", icon = icon("th"))
+      menuItem("Trends Analysis", tabName = "trends", icon = icon("th")),
+      menuItem("About", tabName = "about", icon = icon("question-sign", lib = "glyphicon"))
+    ),
+    div(
+      img(src="put_logo_white.png", style = "max-height: 100%; max-width: 100%"),
+      style = "width: 100%; padding: 0 10px; position: absolute; bottom: 0"
     )
   ),
   dashboardBody(
@@ -49,6 +54,7 @@ dashboardPage(
         fluidRow(
           column(
             width = 6,
+            style = "padding: 0",
             box(
               title = "Best Games by Platform",
               status = "primary",
@@ -65,7 +71,7 @@ dashboardPage(
               uiOutput("description")
             )
           ),
-          box(DTOutput("table"))
+          box(dataTableOutput("table"))
         ),
         fluidRow(
           box(
@@ -101,6 +107,18 @@ dashboardPage(
             width = 6,
             plotlyOutput("play_time_price"))
         ),
+      ),
+      tabItem(
+        tabName = "about",
+        fluidRow(
+          box(
+            title = "About",
+            status = "primary",
+            solidHeader = TRUE,
+            width = 12,
+            uiOutput("about")
+          )
+        )
       )
     )
   )

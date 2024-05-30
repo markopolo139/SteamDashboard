@@ -28,7 +28,7 @@ function(input, output, session) {
       data
   })
 
-  output$table <- renderDT({
+  output$table <- renderDataTable({
       datatable(
         data_for_years() %>% select(AppID, Name, Metacritic.score, Price, About.the.game),
         options = list(
@@ -104,21 +104,21 @@ function(input, output, session) {
 
     gg <- ggplot(data, aes(x = DLC.count_bin, y = Price)) +
       geom_boxplot(outlier.shape = NA) +
-      labs(x = "Number of DLC", y = "Price") +
+      labs(x = "Number of DLC", y = "Price($)") +
       scale_x_discrete(labels = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10+"))
 
     ggplotly(gg)
   })
 
   output$play_time_price <- renderPlotly({
-    data <- data_for_years() %>% filter(!is.na(Average.playtime.forever)) %>% filter(Average.playtime.forever > 10000)
+    data <- data_for_years() %>% filter(!is.na(Average.playtime.forever)) %>% filter(Average.playtime.forever > 5000) %>% mutate(Average.playtime.forever.hours = Average.playtime.forever / 60)
 
     gg <- ggplot(
-      data, aes(x = Price, y = Average.playtime.forever,
+      data, aes(x = Price, y = Average.playtime.forever.hours,
                 text = paste("Game: ", Name))
     ) +
     geom_point() +
-    labs(x = "Price", y = "Average playtime")
+    labs(x = "Price($)", y = "Average playtime in hours")
 
     ggplotly(gg)
   })
@@ -166,5 +166,28 @@ function(input, output, session) {
     } else {
       "No games found in the selected genre"
     }
+  })
+
+  output$about <- renderUI({
+    fluidRow(
+      column(
+        width = 12,
+        p("Welcome to the Steam Games Analysis Dashboard!"),
+        p("This interactive dashboard allows you to explore trends and insights within the world of Steam games. You can filter games based on release dates, genres, and platforms, and visualize various metrics such as Metacritic scores, prices, and player playtime."),
+        h3("Features:"),
+        tags$ul(
+          tags$li("Dashboard Tab: Explore the best games by platform, view detailed game descriptions, and analyze the number of released games within a selected time frame."),
+          tags$li("Trends Analysis Tab: Dive into trends related to game prices, number of downloadable content (DLC), and average playtime."),
+        ),
+        h3("How to Use:"),
+        tags$ol(
+          tags$li("Years Range Slider: Adjust the slider to select a range of years for filtering the data."),
+          tags$li("Genre Selector: Choose a genre from the dropdown menu to explore the best free-to-play games within that genre."),
+          tags$li("Table Interaction: Click on a game in the table to view its detailed description and image.")
+        ),
+        p("Explore the tabs to gain insights into the world of Steam games!"),
+        p("Authors: Marek Seget, Krzysztof Bryszak")
+      )
+    )
   })
 }
